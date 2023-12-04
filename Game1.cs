@@ -8,6 +8,10 @@ namespace Making_a_Player_Class
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        KeyboardState keyboardState;
+        Texture2D amoebaTexture;
+        Texture2D wallTexture;
+        Texture2D foodTexture;
 
         public Game1()
         {
@@ -26,7 +30,9 @@ namespace Making_a_Player_Class
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            amoebaTexture = Content.Load<Texture2D>("amoeba");
+            wallTexture = Content.Load<Texture2D>("rectangle");
+            foodTexture = Content.Load<Texture2D>("circle");
             // TODO: use this.Content to load your game content here
         }
 
@@ -36,7 +42,7 @@ namespace Making_a_Player_Class
                 Exit();
 
             // TODO: Add your update logic here
-
+            keyboardState = Keyboard.GetState();
             base.Update(gameTime);
         }
 

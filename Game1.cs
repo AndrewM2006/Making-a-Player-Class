@@ -14,8 +14,8 @@ namespace Making_a_Player_Class
         Texture2D wallTexture;
         Texture2D foodTexture;
         List<Rectangle> barriers;
-        List<Rectangle> food;
-        Player amoeba;
+        List<Player> amoebas;
+        List<Food> feed;
 
         public Game1()
         {
@@ -23,21 +23,24 @@ namespace Making_a_Player_Class
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.ApplyChanges();
-            this.Window.Title = "Player Class";
+            this.Window.Title = "Amoeba Game";
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             base.Initialize();
-            amoeba = new Player(amoebaTexture, 10, 10);
+            amoebas = new List<Player>();
+            feed = new List<Food>();
+            for (int i = 0; i < 10; i++)
+            {
+                feed.Add(new Food(foodTexture));
+            }
+            amoebas.Add(new Player(amoebaTexture, 10, 10));
+            amoebas.Add(new Player(amoebaTexture, 10, 40));
             barriers = new List<Rectangle>();
-            food = new List<Rectangle>();
             barriers.Add(new Rectangle(100, 100, 10, 200));
             barriers.Add(new Rectangle(400, 400, 100, 10));
-            food.Add(new Rectangle(50, 50, 10, 10));
-            food.Add(new Rectangle(600, 100, 10, 10));
-            food.Add(new Rectangle(50, 200, 10, 10));
         }
 
         protected override void LoadContent()
@@ -56,39 +59,69 @@ namespace Making_a_Player_Class
 
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
-            amoeba.HSpeed = 0;
-            amoeba.VSpeed = 0;
+            foreach(Player amoeba in amoebas)
+            {
+                amoeba.HSpeed = 0;
+                amoeba.VSpeed = 0;
+            }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                amoeba.HSpeed += 3;
-               
+                amoebas[0].HSpeed += 3;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                amoeba.HSpeed += -3;
-                
+                amoebas[0].HSpeed += -3;
             }
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                amoeba.VSpeed += -3;
-               
+                amoebas[0].VSpeed += -3;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                amoeba.VSpeed += 3;
-                
+                amoebas[0].VSpeed += 3;
+            }
+            if (keyboardState.IsKeyDown(Keys.Right))
+            {
+                amoebas[1].HSpeed += 3;
+            }
+            if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                amoebas[1].HSpeed += -3;
+            }
+            if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                amoebas[1].VSpeed += -3;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                amoebas[1].VSpeed += 3;
             }
 
-            amoeba.Update(barriers);
-
-            for (int i = 0; i < food.Count; i++)
+            foreach (Player amoeba in amoebas)
             {
-                if (amoeba.Collide(food[i]))
+                amoeba.Update(barriers, _graphics);
+
+                for (int i = 0; i < feed.Count; i++)
                 {
-                    food.RemoveAt(i);
-                    i--;
-                    amoeba.Grow();
+                    if (amoeba.Collide(feed[i].Location))
+                    {
+                        feed.RemoveAt(i);
+                        i--;
+                        amoeba.Grow();
+                    }
                 }
+            }
+            if (amoebas[0].Collide(amoebas[1].Location))
+            {
+                amoebas[0].UndoMove();
+            }
+            if (amoebas[1].Collide(amoebas[0].Location))
+            {
+                amoebas[1].UndoMove();
+            }
+            foreach (Food feed in feed)
+            {
+                feed.Move(barriers, _graphics);
             }
             base.Update(gameTime);
         }
@@ -99,14 +132,17 @@ namespace Making_a_Player_Class
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            amoeba.Draw(_spriteBatch);
+            foreach (Player amoeba in amoebas)
+            {
+                amoeba.Draw(_spriteBatch);
+            }
             foreach (Rectangle barrier in barriers)
             {
                 _spriteBatch.Draw(wallTexture, barrier, Color.White);
             }
-            foreach (Rectangle bit in food)
+            foreach (Food feed in feed)
             {
-                _spriteBatch.Draw(foodTexture, bit, Color.Green);
+                feed.Draw(_spriteBatch);
             }
             _spriteBatch.End();
             base.Draw(gameTime);

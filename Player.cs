@@ -33,21 +33,43 @@ namespace Making_a_Player_Class
             set { _speed.Y = value; }
         }
 
-        private void Move(List<Rectangle> barriers)
+        public Rectangle Location
         {
-            _location.Offset(_speed);
-            
-            foreach (Rectangle barrier in barriers) 
-            { 
-               if () 
-            }
-          
+            get { return _location; }
         }
 
-        public void Update(List<Rectangle> barriers)
+        private void Move(List<Rectangle> barriers, GraphicsDeviceManager Graphics)
         {
-            _speed.Normalize();
-            Move(barriers);
+            _location.X += (int)_speed.X;
+            if (_location.X + _location.Width > Graphics.PreferredBackBufferWidth || _location.X < 0)
+            {
+                _location.X -= (int)_speed.X;
+            }
+            foreach (Rectangle barrier in barriers)
+            {
+                if (Collide(barrier) == true)
+                {
+                    _location.X -= (int)_speed.X;
+                }
+            }
+            _location.Y += (int)_speed.Y;
+            if (_location.Y + _location.Height > Graphics.PreferredBackBufferHeight || _location.Y < 0)
+            {
+                _location.Y -= (int)_speed.Y;
+            }
+            foreach (Rectangle barrier in barriers)
+            {
+                if (Collide(barrier) == true)
+                {
+                    _location.Y -= (int)_speed.Y;
+                }
+            }
+
+        }
+
+        public void Update(List<Rectangle> barriers, GraphicsDeviceManager Graphics)
+        {
+            Move(barriers, Graphics);
         }
 
         public bool Collide(Rectangle item)
@@ -55,30 +77,16 @@ namespace Making_a_Player_Class
             return _location.Intersects(item);
         }
 
-        public void UndoMoveLeft(Rectangle collide)
-        {
-            _location.X = collide.Right;
-        }
-
-        public void UndoMoveRight(Rectangle collide)
-        {
-            _location.X = collide.Left - _location.Width;
-        }
-
-        public void UndoMoveDown(Rectangle collide)
-        {
-            _location.Y = collide.Top - _location.Height;
-        }
-
-        public void UndoMoveUp(Rectangle collide)
-        {
-            _location.Y = collide.Bottom;
-        }
-
         public void Grow()
         {
             _location.Width += 5;
             _location.Height += 5;
+        }
+
+        public void UndoMove()
+        {
+            _location.X -= (int)_speed.X;
+            _location.Y -= (int)_speed.Y;
         }
 
         public void Draw(SpriteBatch spriteBatch)

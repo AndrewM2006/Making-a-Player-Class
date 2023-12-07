@@ -14,11 +14,13 @@ namespace Making_a_Player_Class
         private Texture2D _texture;
         private Rectangle _location;
         private Vector2 _speed;
+        private Color _color;
         Random generator = new Random();
 
-        public Food(Texture2D texture)
+        public Food(Texture2D texture, Color color)
         {
             _texture = texture;
+            _color = color;
             do
             {
                 _speed = new Vector2(generator.Next(-5, 5), generator.Next(-5, 5));
@@ -29,7 +31,7 @@ namespace Making_a_Player_Class
 
         public void Draw(SpriteBatch sprite)
         {
-            sprite.Draw(_texture, _location, Color.Green);
+            sprite.Draw(_texture, _location, _color);
         }
 
         public void Move(List<Rectangle> barriers, GraphicsDeviceManager graphics)

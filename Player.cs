@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Making_a_Player_Class
         private Texture2D _texture;
         private Rectangle _location;
         private Vector2 _speed;
+        Random generator = new Random();
+        KeyboardState keyboardState;
 
         public Player(Texture2D texture, int x, int y)
         {
@@ -69,6 +72,7 @@ namespace Making_a_Player_Class
 
         public void Update(List<Rectangle> barriers, GraphicsDeviceManager Graphics)
         {
+            keyboardState = Keyboard.GetState();
             Move(barriers, Graphics);
         }
 
@@ -83,6 +87,12 @@ namespace Making_a_Player_Class
             _location.Height += 5;
         }
 
+        public void Shrink()
+        {
+            _location.Width -= 5;
+            _location.Height -= 5;
+        }
+
         public void UndoMove()
         {
             _location.X -= (int)_speed.X;
@@ -92,6 +102,21 @@ namespace Making_a_Player_Class
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _location, Color.White);
+        }
+
+        public void Reset()
+        {
+            if (generator.Next(2) == 1)
+            {
+                _location.X = 40;
+                _location.Y = 40;
+            }
+            else
+            {
+                _location.X = 700;
+                _location.Y = 380;
+            }
+            
         }
     }
 }
